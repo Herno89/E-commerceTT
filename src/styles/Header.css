@@ -1,0 +1,14 @@
+:root {
+  --primary-color: #7b977c;
+  --primary-dark: #324f34;
+  --text-light: white;
+}
+
+.header {
+  background-color: var(--primary-color);
+  padding: 10px;
+  text-align: center;
+  color: var(--text-light);
+
+}
+

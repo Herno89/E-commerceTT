@@ -1,0 +1,13 @@
+.footer {
+  background-color: gray;
+  padding: 1px;
+  text-align: center;
+  color: black;
+  
+  /* Posicionamiento fijo en la parte inferior */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
