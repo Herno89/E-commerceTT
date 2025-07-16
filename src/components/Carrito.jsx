@@ -1,5 +1,8 @@
 import { useContext } from "react";
-import { Container, Button, Table, Alert, Badge, Row, Col, Card } from "react-bootstrap";
+import { 
+  Container, Button, Table, Alert, Badge, Row, Col, Card, 
+  Stack, ListGroup 
+} from "react-bootstrap";
 import { Navigate } from "react-router-dom";
 import { CarritoContext } from "../contexts/CarritoContext.jsx";
 import { useAuthContext } from "../contexts/AuthContext.jsx";
@@ -10,20 +13,17 @@ export default function Carrito() {
   const { user } = useAuthContext();
   const { productosCarrito, vaciarCarrito, borrarProductoCarrito } = useContext(CarritoContext);
 
-  // Calcular total con conversión segura a número
   const total = productosCarrito.reduce(
     (subTotal, producto) => subTotal + (Number(producto.price) || 0) * (producto.cantidad || 1), 
     0
   );
 
   const generarRecibo = () => {
-    // Validar que haya productos
     if (productosCarrito.length === 0) {
       alert("No hay productos en el carrito");
       return;
     }
 
-    // Crear contenido del recibo
     let contenidoRecibo = `RECIBO DE COMPRA\n\n`;
     contenidoRecibo += `Cliente: ${user || 'Invitado'}\n`;
     contenidoRecibo += `Fecha: ${new Date().toLocaleDateString()}\n\n`;
@@ -43,7 +43,6 @@ export default function Carrito() {
     contenidoRecibo += `\nTOTAL: $${total.toFixed(2)}\n\n`;
     contenidoRecibo += `¡Gracias por su compra!`;
 
-    // Crear y descargar archivo
     try {
       const blob = new Blob([contenidoRecibo], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -55,13 +54,11 @@ export default function Carrito() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      // Vaciar carrito después de descargar
       vaciarCarrito();
       dispararSweetBasico("Recibo generado", "", "success", "Confirmar");
     } catch (error) {
       console.error("Error al generar recibo:", error);
       dispararSweetBasico("Ocurrió un error al generar el recibo", "", "success", "Confirmar");
-      
     }
   };
 
@@ -70,7 +67,7 @@ export default function Carrito() {
   }
 
   return (
-    <Container className="my-4">
+    <Container className="my-4 px-3 px-sm-4">
       <h2 className="mb-4">Tu Carrito de Compras</h2>
       
       {productosCarrito.length > 0 ? (
@@ -85,37 +82,75 @@ export default function Carrito() {
             </Button>
           </div>
           
-          <Table responsive striped bordered hover className="align-middle">
-            <thead className="table-dark">
-              <tr>
-                <th>Producto</th>
-                <th>Descripción</th>
-                <th className="text-center">Cantidad</th>
-                <th className="text-end">Precio Unitario</th>
-                <th className="text-end">Subtotal</th>
-                <th className="text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
+
+          <div className="d-none d-lg-block">
+            <Table responsive striped bordered hover className="align-middle">
+              <thead className="table-dark">
+                <tr>
+                  <th>Producto</th>
+                  <th>Descripción</th>
+                  <th className="text-center">Cantidad</th>
+                  <th className="text-end">Precio Unitario</th>
+                  <th className="text-end">Subtotal</th>
+                  <th className="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {productosCarrito.map((producto) => (
+                  <CarritoCard 
+                    key={producto.id} 
+                    producto={producto} 
+                    funcionBorrar={borrarProductoCarrito} 
+                  />
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} className="text-end fw-bold">Total:</td>
+                  <td className="text-end fw-bold">${total.toFixed(2)}</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </Table>
+          </div>
+          
+
+          <div className="d-lg-none">
+            <ListGroup>
               {productosCarrito.map((producto) => (
-                <CarritoCard 
-                  key={producto.id} 
-                  producto={producto} 
-                  funcionBorrar={borrarProductoCarrito} 
-                />
+                <ListGroup.Item key={producto.id} className="mb-3">
+                  <Stack gap={3}>
+                    <div className="d-flex justify-content-between">
+                      <strong>{producto.name}</strong>
+                      <span>${(Number(producto.price) * (producto.cantidad || 1)).toFixed(2)}</span>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>Cantidad: {producto.cantidad || 1}</span>
+                      <Button 
+                        variant="outline-danger" 
+                        size="sm"
+                        onClick={() => borrarProductoCarrito(producto.id)}
+                      >
+                        Eliminar
+                      </Button>
+                    </div>
+                  </Stack>
+                </ListGroup.Item>
               ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan={4} className="text-end fw-bold">Total:</td>
-                <td className="text-end fw-bold">${total.toFixed(2)}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-          </Table>
+            </ListGroup>
+            
+            <Card className="mt-3 p-3 bg-light">
+              <div className="d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">Total:</h5>
+                <Badge bg="primary" className="fs-5">
+                  ${total.toFixed(2)}
+                </Badge>
+              </div>
+            </Card>
+          </div>
           
           <Row className="mt-4">
-            <Col md={{ span: 4, offset: 8 }}>
+            <Col xs={12} lg={{ span: 4, offset: 8 }}>
               <Card className="p-3">
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <h5 className="mb-0">Total a pagar:</h5>
