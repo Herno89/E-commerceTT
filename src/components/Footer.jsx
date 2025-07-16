@@ -1,10 +1,14 @@
-import "../styles/Footer.css"
-function Footer() {  
-    return (  
-        <footer className="footer">  
-            <p>&copy; 2025 - E-comerce Randon</p>  
-        </footer>  
-    );  
-}  
+import "../styles/Footer.css";
+import { Container } from "react-bootstrap";
 
-export default Footer;  
+function Footer() {
+    return (
+        <footer className="bg-dark text-white py-3 mt-auto">
+            <Container className="text-center">
+                <p className="mb-0">&copy; 2025 - E-commerce Random</p>
+            </Container>
+        </footer>
+    );
+}
+
+export default Footer;

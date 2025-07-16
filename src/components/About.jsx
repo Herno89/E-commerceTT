@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
 import "../styles/About.css";
+import { Container, Button } from 'react-bootstrap';
 
 function About() {
     return (
-      <section className="About-Conteiner">
+      <Container className="About-Conteiner p-4">
         <h2>Sobre Nosotros</h2>
         <p>
           Bienvenido a nuestra tienda online. Nos especializamos en ofrecer
@@ -11,18 +11,19 @@ function About() {
           brindarte una experiencia de compra simple, rápida y segura.
         </p>
         <p>
-          Ya sea que estés buscando tecnología, ropa, accesorios o más, en
-          nuestro e-commerce vas a encontrar lo que necesitás.
+          Ya sea que estés buscando tecnología, ropa, comida, accesorios o más, en
+          nuestro e-commerce vas a encontrar cosas que no necesitás.
         </p>
         
-        {/* Botón de contacto */}
-        <button 
-        className="contact-button"
-        onClick={() => window.location.href = "/contacto"}
+
+        <Button 
+          variant="primary"
+          className="contact-button"
+          onClick={() => window.location.href = "/contacto"}
         >
-        Contáctanos
-        </button>
-      </section>
+          Contáctanos
+        </Button>
+      </Container>
     );
 }
 

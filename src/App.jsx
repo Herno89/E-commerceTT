@@ -1,6 +1,4 @@
-import { useState } from 'react'
-
-import './App.css'
+import { useEffect, useState } from 'react'
 import Home from './layouts/Home'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Nav from './components/Nav'
@@ -10,72 +8,45 @@ import About from './components/About';
 import Contacto from './components/Contacto';
 import ProductoDetalle from './components/ProductoDetalle';
 import Admin from './components/Admin';
-import Login from './components/Login';
 import ProductosDestacados from './components/ProductosDestacados';
 import Footer from './components/Footer';
-
+import FormularioProducto from './components/FormularioProducto';
+import FormularioEdicion from './components/FormularioEdicion';
+import { useAuthContext } from './contexts/AuthContext';
+import LoginBootstrap from './components/LoginBootstrap';
+import PerfilUsuario from './components/PerfilUsuario';
 
 function App() {
-  const [productosCarrito, setProductosCarrito] = useState([])
-  const [usuarioLogeado, setUsuarioLogeado] = useState(false)
-  const [adminLogeado, setAdminLogeado] = useState(false)
-
-  function funcionCarrito(producto){
-    const existe = productosCarrito.find(p => p.id === producto.id);
-    console.log(existe)
-    if (existe) {
-        const carritoActualizado = productosCarrito.map((p) => {
-            if (p.id === producto.id){
-                const productoActualizado = {...p, cantidad: p.cantidad + producto.cantidad}
-                return productoActualizado
-            }else{
-                return p
-            }
-        })
-        setProductosCarrito(carritoActualizado)
-    }else{
-        // Si no existe, lo agregamos con su cantidad
-        const nuevoCarrito = [...productosCarrito, producto];
-        setProductosCarrito(nuevoCarrito)
-    }
-
-  }
-
-  function borrarProductoCarrito(id){
-    console.log(id)
-    const nuevoCarrito = productosCarrito.filter((p) => p.id !== id);
-    setProductosCarrito(nuevoCarrito);
-  }
-
-  function manejarAdmin() {
-    setAdminLogeado(!adminLogeado)
-  }
-
-  function manejarUser(){
-    setUsuarioLogeado(!usuarioLogeado)
-  }
-
+  const {verificacionLog} = useAuthContext();
+  
+  useEffect(()=>{
+    verificacionLog()
+  },[])
+ 
     // rutas
   return (
     <Router>
-      <div>
-        <Nav productosCarrito={productosCarrito}/>
+      <div className="d-flex flex-column min-vh-100">
+       <main className="flex-grow-1">
+        <Nav />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path='/login' element={<Login user={usuarioLogeado} admin={adminLogeado} setLogeadoAdmin={manejarAdmin} setLogeadoUser={manejarUser}/>}/>
-          <Route path="/productos" element={<ProductosContainer/>} />
-          <Route path="/productosdestacados" element={<ProductosDestacados/>} />
-          <Route path="/carrito" element={<Carrito productosCarrito={productosCarrito} funcionBorrar={borrarProductoCarrito} usuarioLogeado={usuarioLogeado} /> }/>      
+          <Route path="/login" element={<LoginBootstrap />} />
+          <Route path="/productos" element={<ProductosContainer />} />
+          <Route path="/productosdestacados" element={<ProductosDestacados />}/>
+          <Route path="/carrito" element={<Carrito />} />
           <Route path="/nosotros" element={<About />} />
-          <Route path="/contacto" element={<Contacto/>} />
-          <Route path="/productos/:id" element={<ProductoDetalle funcionCarrito={funcionCarrito} />} />
-          <Route path='/admin' element={adminLogeado ? <Admin/> : <Navigate to={"/login"} replace/>} />
-        
+          <Route path="/contacto" element={<Contacto />} />
+          <Route path="/productos/:id" element={<ProductoDetalle />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/agregarproducto" element={<FormularioProducto />}/>
+          <Route path="/admin/editarproducto/:id" element={<FormularioEdicion />}/>
+          <Route path="/perfil" element={<PerfilUsuario />} />
         </Routes>
-      <Footer/>
+        </main>
+        <Footer />
       </div>
     </Router>
-  )
+  );
 }
-
 export default App;
